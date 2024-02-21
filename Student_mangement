@@ -1,0 +1,67 @@
+import mysql.connector
+
+# Connect to MySQL database
+conn = mysql.connector.connect(
+    host='localhost',  # change your host
+    user='root',        #change your user name
+    password='mysql123', # set your mysql password
+    database='student'   # and database your going to use
+)
+cursor = conn.cursor()
+
+# Create students table if not exists
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS students (
+        student_id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        age INT,
+        grade INT
+    )
+''')
+conn.commit()
+
+def add_student(name, age, grade):
+    # To Add a new student to the database
+    cursor.execute('''
+        INSERT INTO students (name, age, grade) VALUES (%s, %s, %s)
+    ''', (name, age, grade))
+    conn.commit()
+
+def get_students():
+    # To Retrieve all students from the database
+    cursor.execute('''
+        SELECT * FROM students
+    ''')
+    return cursor.fetchall()
+
+def main():
+    while True:
+        print("\nStudent Database Management System")
+        print("1. Add Student")
+        print("2. View Students")
+        print("3. Exit")
+
+        choice = input("Enter your choice (1/2/3): ")
+
+        if choice == '1':
+            name = input("Enter student name: ")
+            age = int(input("Enter student age: "))
+            grade = int(input("Enter student grade: "))
+            add_student(name, age, grade)
+            print("Student added successfully!")
+
+        elif choice == '2':
+            students = get_students()
+            print("\nList of Students:")
+            for student in students:
+                print(f"ID: {student[0]}, Name: {student[1]}, Age: {student[2]}, Grade: {student[3]}")
+
+        elif choice == '3':
+            print("Exiting the program. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
+if __name__ == "__main__":
+    main()
